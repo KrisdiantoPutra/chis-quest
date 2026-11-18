@@ -91,7 +91,14 @@ impl NoConsole for Command {
 }
 
 fn history_path() -> PathBuf {
-    exe_dir().join("quester_badge_history.json")
+    let p = exe_dir().join("chis_quest_badge_history.json");
+    if !p.exists() {
+        let old = exe_dir().join("quester_badge_history.json");
+        if old.exists() {
+            return old;
+        }
+    }
+    p
 }
 
 fn history_load() -> HashSet<String> {
@@ -543,7 +550,7 @@ pub fn run_lite_window(title: String, ttl: u64, hidden: bool) {
 
     unsafe {
         let inst = GetModuleHandleW(std::ptr::null());
-        let class: Vec<u16> = "QuesterLite\0".encode_utf16().collect();
+        let class: Vec<u16> = "ChisQuestLite\0".encode_utf16().collect();
         let name: Vec<u16> = title.encode_utf16().chain(std::iter::once(0)).collect();
         let wc = WndClassW {
             style: 0,

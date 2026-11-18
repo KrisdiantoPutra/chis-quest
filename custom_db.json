@@ -1,7 +1,7 @@
 [
   {
-    "name": "please update quester",
+    "name": "please update chis-quest",
     "folder": "update",
-    "exe": ["quester.exe"]
+    "exe": ["chis-quest.exe"]
   }
 ]

@@ -265,7 +265,7 @@ fn load_logo(ctx: &egui::Context) -> Option<egui::TextureHandle> {
         [icon.width as usize, icon.height as usize],
         &icon.rgba,
     );
-    Some(ctx.load_texture("quester_logo", img, egui::TextureOptions::LINEAR))
+    Some(ctx.load_texture("chis_quest_logo", img, egui::TextureOptions::LINEAR))
 }
 
 #[cfg(windows)]
@@ -799,7 +799,7 @@ impl App {
             .changed();
         ui.label(
             egui::RichText::new(
-                "When on, Quester doesn't check for new versions and sends no request.",
+                "When on, chis-quest doesn't check for new versions and sends no request.",
             )
             .small()
             .color(DIM),
@@ -977,7 +977,7 @@ impl App {
         }
         ui.label(
             egui::RichText::new(
-                "Keep Quester open. Discord can take up to a day to update the badge.",
+                "Keep chis-quest open. Discord can take up to a day to update the badge.",
             )
             .small()
             .color(DIM),
@@ -1050,7 +1050,7 @@ impl App {
         ui.label(egui::RichText::new("PC may lag if you run many games").color(RED));
         ui.label(
             egui::RichText::new(
-                "Keep Quester open. Discord can take up to a day to update the badge",
+                "Keep chis-quest open. Discord can take up to a day to update the badge",
             )
             .small()
             .color(DIM),
@@ -1395,7 +1395,7 @@ pub fn run_fake_window(title: String) {
         .with_min_inner_size([360.0, 200.0])
         .with_max_inner_size([360.0, 200.0]);
     #[cfg(not(windows))]
-    let viewport = viewport.with_app_id("Quester.Game");
+    let viewport = viewport.with_app_id("ChisQuest.Game");
     let options = eframe::NativeOptions {
         renderer: eframe::Renderer::Glow,
         multisampling: 0,

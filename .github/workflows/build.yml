@@ -16,11 +16,11 @@ jobs:
       matrix:
         include:
           - os: windows-latest
-            artifact: quester-windows
-            path: target/release/quester.exe
+            artifact: chis-quest-windows
+            path: target/release/chis-quest.exe
           - os: ubuntu-latest
-            artifact: quester-linux
-            path: target/release/quester
+            artifact: chis-quest-linux
+            path: target/release/chis-quest
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
     steps:

@@ -91,7 +91,7 @@ fn run(title: String, ttl: u64, hidden: bool, _tiling: bool) {
     }
 
     unsafe {
-        let id: Vec<u16> = "Quester.App"
+        let id: Vec<u16> = "ChisQuest.App"
             .encode_utf16()
             .chain(std::iter::once(0))
             .collect();
@@ -112,7 +112,7 @@ fn run(title: String, ttl: u64, hidden: bool, _tiling: bool) {
 
     unsafe {
         let inst = GetModuleHandleW(std::ptr::null());
-        let class: Vec<u16> = "QuesterLite\0".encode_utf16().collect();
+        let class: Vec<u16> = "ChisQuestLite\0".encode_utf16().collect();
         let name: Vec<u16> = title.encode_utf16().chain(std::iter::once(0)).collect();
         let wc = WndClassW {
             style: 0,

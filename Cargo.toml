@@ -1,5 +1,5 @@
 [package]
-name = "quester"
+name = "chis-quest"
 version = "1.3.0"
 edition = "2021"
 build = "build.rs"

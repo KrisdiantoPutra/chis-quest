@@ -50,7 +50,14 @@ pub struct ManifestEntry {
 }
 
 fn manifest_path() -> PathBuf {
-    exe_dir().join("quester_manifest.json")
+    let p = exe_dir().join("chis_quest_manifest.json");
+    if !p.exists() {
+        let old = exe_dir().join("quester_manifest.json");
+        if old.exists() {
+            return old;
+        }
+    }
+    p
 }
 
 fn inside_games(p: &Path) -> bool {
@@ -139,7 +146,14 @@ pub struct RunningEntry {
 }
 
 fn running_path() -> PathBuf {
-    exe_dir().join("quester_running.json")
+    let p = exe_dir().join("chis_quest_running.json");
+    if !p.exists() {
+        let old = exe_dir().join("quester_running.json");
+        if old.exists() {
+            return old;
+        }
+    }
+    p
 }
 
 pub fn running_load() -> Vec<RunningEntry> {
@@ -550,6 +564,9 @@ pub fn is_fake_copy() -> bool {
         if is_games {
             if let Some(p) = dir.parent() {
                 if [
+                    "chis_quest_manifest.json",
+                    "chis_quest_running.json",
+                    "chis_quest_badge_history.json",
                     "quester_manifest.json",
                     "quester_running.json",
                     "settings.json",
@@ -595,7 +612,7 @@ pub fn launch_fake(g: &Game, lite: bool) -> (Option<u32>, Vec<String>) {
             match &entry {
                 None => {
                     log.push(format!(
-                        "Refused: {rel} already exists and was not created by Quester"
+                        "Refused: {rel} already exists and was not created by chis-quest"
                     ));
                     continue;
                 }

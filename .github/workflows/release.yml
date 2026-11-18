@@ -87,7 +87,7 @@ jobs:
           $pkg = "pkg/$env:NAME"
           New-Item -ItemType Directory -Force -Path $pkg | Out-Null
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          Copy-Item "target/release/quester.exe" -Destination $pkg
+          Copy-Item "target/release/chis-quest.exe" -Destination $pkg
           Compress-Archive -Path $pkg -DestinationPath "dist/$env:NAME-$env:TAG-windows.zip" -Force
 
       - name: Package (Linux)
@@ -96,13 +96,13 @@ jobs:
           NAME: ${{ github.event.repository.name }}
         run: |
           mkdir -p "pkg/$NAME" dist
-          install -Dm755 target/release/quester "pkg/$NAME/quester"
+          install -Dm755 target/release/chis-quest "pkg/$NAME/chis-quest"
           tar -C pkg -czf "dist/$NAME-$TAG-linux.tar.gz" "$NAME"
 
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: quester-${{ matrix.platform }}
+          name: chis-quest-${{ matrix.platform }}
           path: dist/*
           if-no-files-found: error
 

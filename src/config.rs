@@ -8,7 +8,7 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-pub const APP_NAME: &str = "Quester";
+pub const APP_NAME: &str = "chis-quest";
 
 pub const VERSION: &str = concat!("v", env!("CARGO_PKG_VERSION"));
 
@@ -41,7 +41,7 @@ extern "system" {
 
 #[cfg(windows)]
 pub fn set_app_id() {
-    let id: Vec<u16> = "Quester.App"
+    let id: Vec<u16> = "ChisQuest.App"
         .encode_utf16()
         .chain(std::iter::once(0))
         .collect();
@@ -64,14 +64,14 @@ pub fn install_crash_log() {
     std::panic::set_hook(Box::new(|info| {
         let bt = std::backtrace::Backtrace::force_capture();
         let text = format!("[{}] {info}\n{bt}\n\n", now_ts());
-        let path = exe_dir().join("quester_crash.log");
+        let path = exe_dir().join("chis_quest_crash.log");
         let old = fs::read_to_string(&path).unwrap_or_default();
         let _ = fs::write(path, format!("{old}{text}"));
     }));
 }
 
 pub fn log_crash(msg: &str) {
-    let path = exe_dir().join("quester_crash.log");
+    let path = exe_dir().join("chis_quest_crash.log");
     let old = fs::read_to_string(&path).unwrap_or_default();
     let _ = fs::write(path, format!("{old}[{}] {msg}\n\n", now_ts()));
 }

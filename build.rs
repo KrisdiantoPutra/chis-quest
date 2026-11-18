@@ -40,8 +40,8 @@ fn main() {
     if env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("windows") {
         let mut res = winresource::WindowsResource::new();
         res.set_icon("assets/icon.ico");
-        res.set("ProductName", "Quester");
-        res.set("FileDescription", "Quester");
+        res.set("ProductName", "chis-quest");
+        res.set("FileDescription", "chis-quest");
         if let Err(e) = res.compile() {
             println!("cargo:warning=icon not embedded: {e}");
         }
