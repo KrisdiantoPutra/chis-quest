@@ -48,6 +48,46 @@ pub fn get_hwid() -> String {
     #[cfg(windows)]
     {
         use std::process::Command;
+
+        // 1. Coba ambil MachineGuid dari Registry (ID unik instalasi Windows)
+        if let Ok(output) = Command::new("reg")
+            .args(["query", "HKLM\\SOFTWARE\\Microsoft\\Cryptography", "/v", "MachineGuid"])
+            .output()
+        {
+            let text = String::from_utf8_lossy(&output.stdout);
+            for line in text.lines() {
+                if line.contains("MachineGuid") {
+                    let parts: Vec<&str> = line.split_whitespace().collect();
+                    if parts.len() >= 3 {
+                        let guid = parts[2].trim();
+                        if !guid.is_empty() {
+                            return format!("WIN-{}", guid);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. Coba ambil Serial Number Partisi Drive C:
+        if let Ok(output) = Command::new("cmd")
+            .args(["/c", "vol C:"])
+            .output()
+        {
+            let text = String::from_utf8_lossy(&output.stdout);
+            for line in text.lines() {
+                if line.contains("Serial Number is") {
+                    let parts: Vec<&str> = line.split("Serial Number is").collect();
+                    if parts.len() > 1 {
+                        let vol = parts[1].trim();
+                        if !vol.is_empty() {
+                            return format!("VOL-{}", vol);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Coba wmic csproduct get uuid
         if let Ok(output) = Command::new("wmic")
             .args(["csproduct", "get", "uuid"])
             .output()
@@ -62,15 +102,22 @@ pub fn get_hwid() -> String {
         }
     }
 
-    format!(
-        "DEV-{}-{:?}",
-        std::env::consts::ARCH,
-        std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_secs()
-            / 86400
-    )
+    #[cfg(target_os = "linux")]
+    {
+        for path in ["/etc/machine-id", "/var/lib/dbus/machine-id"] {
+            if let Ok(content) = std::fs::read_to_string(path) {
+                let trimmed = content.trim();
+                if !trimmed.is_empty() {
+                    return format!("LNX-{}", trimmed);
+                }
+            }
+        }
+    }
+
+    // 4. Fallback unik berbasis username komputer + hostname komputer
+    let user = std::env::var("USERNAME").or_else(|_| std::env::var("USER")).unwrap_or_else(|_| "USER".to_string());
+    let comp = std::env::var("COMPUTERNAME").or_else(|_| std::env::var("HOSTNAME")).unwrap_or_else(|_| "PC".to_string());
+    format!("DEV-{}-{}", comp, user)
 }
 
 fn license_file_path() -> PathBuf {
