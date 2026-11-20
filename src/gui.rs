@@ -460,6 +460,7 @@ struct App {
     update_inflight: bool,
 
     main_hidden: bool,
+    auth: crate::auth::AuthState,
 }
 
 impl Drop for App {
@@ -536,6 +537,7 @@ impl App {
             update_status: String::new(),
             update_inflight: false,
             main_hidden: false,
+            auth: crate::auth::AuthState::new(),
         }
     }
 
@@ -1237,6 +1239,13 @@ impl eframe::App for App {
             spawn_fonts(&self.notifier);
             self.logo = load_logo(ctx);
             self.style_set = true;
+        }
+        if !self.auth.is_authenticated {
+            egui::CentralPanel::default().show(ctx, |ui| {
+                self.auth.render_ui(ui, self.logo.as_ref());
+            });
+            ctx.request_repaint_after(Duration::from_millis(100));
+            return;
         }
         if !self.apps_requested {
             self.apps_requested = true;

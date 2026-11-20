@@ -1,5 +1,6 @@
 #![cfg_attr(windows, windows_subsystem = "windows")]
 
+mod auth;
 mod badge;
 mod config;
 mod discord;
