@@ -11,13 +11,14 @@ use std::{
 pub const API_URL: &str = "https://system-chis.vercel.app/api";
 pub const APP_ID: &str = "CHISQUEST";
 
-const COLOR_BG: Color32 = Color32::from_rgb(0x07, 0x0b, 0x13);
-const COLOR_CARD: Color32 = Color32::from_rgb(0x0d, 0x14, 0x24);
-const COLOR_BORDER: Color32 = Color32::from_rgb(0x1e, 0x29, 0x3b);
-const COLOR_EMERALD: Color32 = Color32::from_rgb(0x10, 0xb9, 0x81);
-const COLOR_TEXT: Color32 = Color32::from_rgb(0xf8, 0xfa, 0xfc);
-const COLOR_MUTED: Color32 = Color32::from_rgb(0x94, 0xa3, 0xb8);
-const COLOR_RED: Color32 = Color32::from_rgb(0xef, 0x44, 0x44);
+const BG: Color32 = Color32::from_rgb(0x08, 0x09, 0x0a);
+const CARD: Color32 = Color32::from_rgb(0x0a, 0x0a, 0x0b);
+const ROW: Color32 = Color32::from_rgb(0x15, 0x15, 0x17);
+const BORDER_DIM: Color32 = Color32::from_rgb(60, 60, 66);
+const TEXT: Color32 = Color32::from_rgb(230, 230, 234);
+const DIM: Color32 = Color32::from_rgb(110, 110, 118);
+const GREEN: Color32 = Color32::from_rgb(0x4a, 0xde, 0x80);
+const RED: Color32 = Color32::from_rgb(0xff, 0x4d, 0x4d);
 
 #[derive(Serialize)]
 struct AuthRequest<'a> {
@@ -230,125 +231,152 @@ impl AuthState {
     pub fn render_ui(&mut self, ui: &mut egui::Ui, logo: Option<&egui::TextureHandle>) {
         self.check_results();
 
-        let full_rect = ui.available_rect_before_wrap();
-        ui.painter().rect_filled(full_rect, Rounding::ZERO, COLOR_BG);
+        ui.vertical(|ui| {
+            // Header matching chis-quest
+            ui.horizontal(|ui| {
+                if let Some(t) = logo {
+                    ui.image((t.id(), egui::vec2(38.0, 38.0)));
+                }
+                ui.vertical(|ui| {
+                    ui.spacing_mut().item_spacing.y = 0.0;
+                    ui.heading(egui::RichText::new("chis-quest").strong());
+                    ui.label(egui::RichText::new("license activation").small().color(DIM));
+                });
+            });
 
-        ui.vertical_centered(|ui| {
-            ui.add_space(32.0);
+            ui.add_space(16.0);
 
-            if let Some(t) = logo {
-                ui.image((t.id(), egui::vec2(48.0, 48.0)));
-                ui.add_space(8.0);
-            }
-
+            // Card container matching chis-quest card_frame
             egui::Frame::none()
-                .fill(COLOR_CARD)
-                .rounding(Rounding::same(12.0))
-                .stroke(Stroke::new(1.0, COLOR_BORDER))
-                .inner_margin(Margin::same(20.0))
+                .fill(CARD)
+                .stroke(Stroke::new(1.5, BORDER_DIM))
+                .rounding(Rounding::same(16.0))
+                .inner_margin(Margin::same(16.0))
                 .show(ui, |ui| {
-                    ui.set_max_width(290.0);
+                    ui.set_width(ui.available_width());
 
-                    ui.label(
-                        egui::RichText::new("CHIS AUTH")
-                            .color(COLOR_EMERALD)
-                            .size(19.0)
-                            .strong(),
-                    );
-                    ui.label(
-                        egui::RichText::new("License Verification")
-                            .color(COLOR_MUTED)
-                            .size(11.0),
-                    );
-
-                    ui.add_space(14.0);
-
+                    // Card Title
                     ui.horizontal(|ui| {
-                        ui.label(egui::RichText::new("HWID:").color(COLOR_MUTED).size(10.0));
-                        let short_hwid = if self.hwid.len() > 18 {
-                            format!("{}...", &self.hwid[..18])
-                        } else {
-                            self.hwid.clone()
-                        };
                         ui.label(
-                            egui::RichText::new(short_hwid)
-                                .color(Color32::from_rgb(0xcb, 0xd5, 0xe1))
-                                .monospace()
-                                .size(10.0),
+                            egui::RichText::new("CHIS AUTH")
+                                .strong()
+                                .size(14.0)
+                                .color(GREEN),
                         );
+                        ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                            ui.label(egui::RichText::new("v2.0").small().color(DIM));
+                        });
                     });
 
                     ui.add_space(10.0);
 
-                    ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
-                        ui.label(
-                            egui::RichText::new("License Key")
-                                .color(COLOR_TEXT)
-                                .size(11.0)
-                                .strong(),
-                        );
-                    });
+                    // HWID in row_frame style
+                    egui::Frame::none()
+                        .fill(ROW)
+                        .rounding(Rounding::same(8.0))
+                        .inner_margin(Margin::symmetric(10.0, 6.0))
+                        .show(ui, |ui| {
+                            ui.set_width(ui.available_width());
+                            ui.horizontal(|ui| {
+                                ui.label(egui::RichText::new("HWID").small().color(DIM));
+                                ui.with_layout(
+                                    egui::Layout::right_to_left(egui::Align::Center),
+                                    |ui| {
+                                        let short = if self.hwid.len() > 20 {
+                                            format!("{}...", &self.hwid[..20])
+                                        } else {
+                                            self.hwid.clone()
+                                        };
+                                        ui.label(
+                                            egui::RichText::new(short)
+                                                .monospace()
+                                                .small()
+                                                .color(TEXT),
+                                        );
+                                    },
+                                );
+                            });
+                        });
 
+                    ui.add_space(12.0);
+
+                    // License Key label
+                    ui.label(egui::RichText::new("License Key").size(13.0).color(TEXT));
+
+                    ui.add_space(4.0);
+
+                    // TextEdit matching search input
                     let text_edit = egui::TextEdit::singleline(&mut self.key_input)
                         .hint_text("CHIS-XXXX-XXXX-XXXX")
                         .desired_width(f32::INFINITY)
-                        .margin(egui::vec2(8.0, 7.0));
+                        .margin(egui::vec2(10.0, 8.0));
                     ui.add(text_edit);
 
                     ui.add_space(8.0);
 
+                    // Remember Key checkbox
                     ui.horizontal(|ui| {
                         ui.checkbox(&mut self.remember, "");
                         ui.label(
-                            egui::RichText::new("Remember Key")
-                                .color(COLOR_MUTED)
-                                .size(11.0),
+                            egui::RichText::new("Remember key on this device")
+                                .small()
+                                .color(DIM),
                         );
                     });
 
-                    ui.add_space(12.0);
+                    // Status Message
+                    if !self.status_msg.is_empty() {
+                        ui.add_space(8.0);
+                        let color = if self.is_error { RED } else { GREEN };
+                        ui.label(egui::RichText::new(&self.status_msg).small().color(color));
+                    }
 
+                    ui.add_space(14.0);
+
+                    // Action Button styled matching chis-quest
                     let btn_text = if self.is_loading {
                         "Authenticating..."
                     } else {
-                        "ACTIVATE & LAUNCH"
+                        "Activate & Launch"
                     };
 
                     let btn = egui::Button::new(
                         egui::RichText::new(btn_text)
-                            .color(Color32::WHITE)
                             .strong()
-                            .size(12.0),
+                            .size(13.5)
+                            .color(Color32::WHITE),
                     )
-                    .fill(if self.is_loading { COLOR_BORDER } else { COLOR_EMERALD })
+                    .fill(if self.is_loading {
+                        Color32::from_rgb(35, 35, 40)
+                    } else {
+                        Color32::from_rgb(35, 134, 54)
+                    })
+                    .stroke(Stroke::new(
+                        1.0,
+                        if self.is_loading {
+                            BORDER_DIM
+                        } else {
+                            GREEN
+                        },
+                    ))
                     .rounding(Rounding::same(8.0))
-                    .min_size(Vec2::new(f32::INFINITY, 34.0));
+                    .min_size(Vec2::new(ui.available_width(), 36.0));
 
                     if ui.add_enabled(!self.is_loading, btn).clicked() {
                         self.trigger_validation(false);
                     }
-
-                    if !self.status_msg.is_empty() {
-                        ui.add_space(10.0);
-                        let color = if self.is_error {
-                            COLOR_RED
-                        } else {
-                            COLOR_EMERALD
-                        };
-                        ui.label(
-                            egui::RichText::new(&self.status_msg)
-                                .color(color)
-                                .size(10.5),
-                        );
-                    }
-
-                    ui.add_space(10.0);
-                    ui.label(
-                        egui::RichText::new("Protected by CHIS AUTH v2.0")
-                            .color(Color32::from_rgb(0x47, 0x55, 0x69))
-                            .size(9.0),
-                    );
                 });
+
+            ui.add_space(16.0);
+
+            // Subtle note at bottom
+            ui.vertical_centered(|ui| {
+                ui.label(
+                    egui::RichText::new("Internet connection required to activate")
+                        .small()
+                        .color(DIM),
+                );
+            });
         });
     }
 }

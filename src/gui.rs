@@ -1241,9 +1241,15 @@ impl eframe::App for App {
             self.style_set = true;
         }
         if !self.auth.is_authenticated {
-            egui::CentralPanel::default().show(ctx, |ui| {
-                self.auth.render_ui(ui, self.logo.as_ref());
-            });
+            let screen = ctx.screen_rect();
+            ctx.layer_painter(egui::LayerId::background())
+                .rect_filled(screen, 0.0, BG);
+
+            egui::CentralPanel::default()
+                .frame(egui::Frame::none().fill(BG).inner_margin(Margin::symmetric(16.0, 14.0)))
+                .show(ctx, |ui| {
+                    self.auth.render_ui(ui, self.logo.as_ref());
+                });
             ctx.request_repaint_after(Duration::from_millis(100));
             return;
         }
