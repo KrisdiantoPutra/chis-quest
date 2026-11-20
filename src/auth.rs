@@ -280,7 +280,7 @@ impl AuthState {
 
                     ui.add_space(10.0);
 
-                    ui.align_left(|ui| {
+                    ui.with_layout(egui::Layout::left_to_right(egui::Align::Center), |ui| {
                         ui.label(
                             egui::RichText::new("License Key")
                                 .color(COLOR_TEXT)
@@ -292,7 +292,7 @@ impl AuthState {
                     let text_edit = egui::TextEdit::singleline(&mut self.key_input)
                         .hint_text("CHIS-XXXX-XXXX-XXXX")
                         .desired_width(f32::INFINITY)
-                        .margin(Margin::symmetric(8.0, 7.0));
+                        .margin(egui::vec2(8.0, 7.0));
                     ui.add(text_edit);
 
                     ui.add_space(8.0);
